@@ -21,9 +21,7 @@ not include foundation-model checkpoints or datasets.
 
 ## Method overview
 
-## Method Overview
-
-![DualRest-HMR Overview](assets/dualrest_editable.pdf)
+![DualRest-HMR Method Overview](assets/dualrest_editable.pdf)
 
 The restoration adapters are the only learned DualRest-HMR components in this
 inference path; the foundation HMR model and its prediction heads remain frozen.
