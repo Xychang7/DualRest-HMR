@@ -4,7 +4,7 @@
 
 ## Project overview
 
-![DualRest-HMR Project Overview](assets/Overview.png)
+
 
 DualRest-HMR restores occlusion-degraded predictions from a frozen foundation
 human mesh recovery model in two complementary spaces:
@@ -15,6 +15,8 @@ human mesh recovery model in two complementary spaces:
 - **Progressive camera restoration** first calibrates camera-related features
   frame by frame and then restores their temporal consistency before the frozen
   camera head.
+
+![DualRest-HMR Project Overview](assets/Overview.png)
 
 The restored body and camera predictions are composed with the remaining frozen
 foundation predictions to produce the final human mesh. The repository includes
