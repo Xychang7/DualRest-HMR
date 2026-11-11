@@ -21,19 +21,9 @@ not include foundation-model checkpoints or datasets.
 
 ## Method overview
 
-```mermaid
-flowchart LR
-    I[Video frames] --> F[Frozen foundation HMR]
-    F --> Z[Shared decoder representation]
-    Z --> B[Body temporal restoration]
-    B --> P[Frozen pose head]
-    Z --> C1[Frame-wise camera calibration]
-    C1 --> C2[Camera temporal restoration]
-    C2 --> C[Frozen camera head]
-    P --> O[Parameter composition]
-    C --> O
-    O --> M[Final human mesh sequence]
-```
+## Method Overview
+
+![DualRest-HMR Overview](assets/dualrest_editable.pdf)
 
 The restoration adapters are the only learned DualRest-HMR components in this
 inference path; the foundation HMR model and its prediction heads remain frozen.
