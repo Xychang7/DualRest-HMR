@@ -4,6 +4,8 @@
 
 ## Project overview
 
+![DualRest-HMR Project Overview](assets/Overview.png)
+
 DualRest-HMR restores occlusion-degraded predictions from a frozen foundation
 human mesh recovery model in two complementary spaces:
 
@@ -21,7 +23,7 @@ not include foundation-model checkpoints or datasets.
 
 ## Method overview
 
-![DualRest-HMR Method Overview](assets/dualrest_editable.pdf)
+![Method Overview](assets/Method_overview.png)
 
 The restoration adapters are the only learned DualRest-HMR components in this
 inference path; the foundation HMR model and its prediction heads remain frozen.
