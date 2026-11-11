@@ -1,0 +1,52 @@
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Environments and local secrets
+.env
+.env.*
+.venv/
+venv/
+env/
+
+# Runtime outputs, logs, and temporary files
+outputs/
+gradio_tmp/
+logs/
+*.log
+*.tmp
+*.part
+
+# Datasets and external foundation resources
+data/
+datasets/
+checkpoints/base/
+
+# Generated local configuration/helpers retained from the upstream project
+body4d.yaml
+save_masks.py
+save_video.py
+img_vid_concat.py
+mhr_smpl_conversion/
+
+# The released restoration checkpoints under checkpoints/dualrest/ are
+# intentionally versioned and are not ignored here.
+

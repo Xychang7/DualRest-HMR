@@ -1,0 +1,228 @@
+{
+  "schema": "dualrest-hmr-method-facts-v1",
+  "date": "2026-10-11",
+  "checkpoint_gate": {
+    "passed": true,
+    "body": {"path": "/root/sam-body4d-0.2.0/outputs/dynamesh_v2_phase2_training/best.pt", "sha256": "f1509cc1a8bfae84501aeac2004529b029fb8a4b60afa8a4349faf31efe60329"},
+    "camera_framewise": {"path": "/root/sam-body4d-0.2.0/outputs/dynamesh_v2_camera_phase2/framewise/best.pt", "sha256": "fd318ddbe3e3a1e9a13134e649ce92aa60c9b28385bf809ffb3ffc44ef516cb2"},
+    "camera_temporal": {"path": "/root/sam-body4d-0.2.0/outputs/dynamesh_v2_camera_phase2/temporal_true/best.pt", "sha256": "e7562abc45825de76ddb7a24b60bdf3675061c9ba63ac150071558b98f6ac865"}
+  },
+  "pipeline": {
+    "foundation": "frozen SAM-Body4D encoder/decoder and frozen MHR/camera heads",
+    "shared_source": "single SAM decoder pose token",
+    "body": "pose_token -> BodyFeatureTemporalAdapter -> frozen head_pose -> refined body articulation",
+    "camera": "pose_token -> FramewiseLatentAdapter -> frozen head_camera -> CameraFeatureTemporalAdapter formal residual helper -> frozen head_camera -> pred_cam/pred_cam_t",
+    "fusion": "no learned fusion; late deterministic replacement of body articulation and camera fields",
+    "raw_only_fields": ["global_rot", "hand", "scale", "shape", "face/expression", "jaw"]
+  },
+  "body_representation": {
+    "formal_name": "SAM-Body4D decoder pose token",
+    "token_count": 1,
+    "dimension": 1024,
+    "cache_shape": [4, "T", 1024],
+    "adapter_shape": ["B", 16, 1024],
+    "not": ["cls token", "separate global token", "decoded body parameters"],
+    "decoded_continuous_body_dimension": 260,
+    "mhr_parameter_dimension": 519,
+    "mhr_vertices": 18439
+  },
+  "body_adapter": {
+    "class": "BodyFeatureTemporalAdapter",
+    "input_projection": [1024, 256],
+    "condition_mlp": [1, 256, 256],
+    "condition_activation": "SiLU",
+    "fusion": "additive before temporal blocks",
+    "mamba": {"directions": 2, "layers_per_direction": 2, "d_model": 256, "d_state": 16, "d_conv": 4, "expand": 2},
+    "output_projection": [256, 1024],
+    "formula": "z_restored = z + Linear(LN(Mamba_fwd(h)+reverse(Mamba_bwd(reverse(h)))))",
+    "window": 16,
+    "stride": 8,
+    "output": "all frames, most-central-window ownership merge",
+    "parameters": 2345472
+  },
+  "restoration_strength": {
+    "code_name": "occlusion_ratio",
+    "shape": ["B", "T"],
+    "formal_inference_value": 0.15,
+    "requires_observed_occlusion_ratio": false,
+    "alpha_zero_is_structural_bypass": false
+  },
+  "body_training": {
+    "dataset": "3DPW",
+    "optimization_split": "train",
+    "validation_split": "validation",
+    "train_tracks": 34,
+    "validation_tracks": 16,
+    "train_windows": 21330,
+    "validation_windows": 614,
+    "conditions": [0.0, 0.15, 0.35, 0.55],
+    "synthetic_corruption": "deterministic bbox-relative filled rectangles",
+    "window": 16,
+    "train_stride": 1,
+    "batch_size": 16,
+    "optimizer": "AdamW",
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "max_epochs": 12,
+    "patience": 3,
+    "best_epoch": 7,
+    "stopped_after_epoch": 10,
+    "losses": [
+      {"name": "feature", "type": "SmoothL1", "prediction": "restored token", "target": "clean token", "weight": 1.0},
+      {"name": "body", "type": "rotation geodesic", "prediction": "decoded refined articulation rotations", "target": "clean teacher articulation rotations", "weight": 0.1},
+      {"name": "anchor", "type": "SmoothL1", "prediction": "Adapter(clean token,0)", "target": "clean token", "weight": 1.0}
+    ],
+    "dynamics_low_velocity_acceleration": "ABLATION_ONLY"
+  },
+  "framewise_camera": {
+    "class": "FramewiseLatentAdapter",
+    "formula": "z_fw=z+Linear_128_1024(GELU(Linear_1024_128(LayerNorm(z))))",
+    "input_shape": ["B", "T", 1024],
+    "output_shape": ["B", "T", 1024],
+    "temporal_context": false,
+    "reliability_cues": false,
+    "parameters": 265344
+  },
+  "camera_cues": {
+    "values_dimension": 6,
+    "presence_mask_dimension": 6,
+    "condition_dimension": 12,
+    "fields": ["visibility=1-ratio", "bbox center delta x/y", "bbox log-scale delta", "mask area delta absent", "temporal latent disagreement"],
+    "uses_gt": false,
+    "uses_mask": false,
+    "uses_keypoint_confidence": false,
+    "uses_reprojection_residual": false,
+    "formal_natural_video_visibility": 1.0,
+    "interpretation": "conditioning cues, not an executed learned reliability gate"
+  },
+  "temporal_camera": {
+    "class": "CameraFeatureTemporalAdapter",
+    "formal_function": "train_dynamesh_v2_camera_phase112.temporal_residual_forward",
+    "input": "frozen frame-wise refined token",
+    "input_projection": [1024, 128],
+    "condition_projection": [12, 128],
+    "mamba": {"directions": 2, "layers_per_direction": 2, "d_model": 128, "d_state": 16, "d_conv": 4, "expand": 2},
+    "formula": "z_cam=z_fw+delta",
+    "window": 16,
+    "formal_runner_merge": "non-overlap chunks <=16, exactly-once coverage",
+    "temporal_only_valid": false,
+    "parameters": 733633,
+    "stored_but_bypassed_reliability_head_parameters": 449,
+    "formal_reliability_gate_used": false
+  },
+  "camera_definition": {
+    "pred_cam": ["s", "tx", "ty"],
+    "pred_cam_shape": ["N", 3],
+    "pred_cam_t_shape": ["N", 3],
+    "depth": "tz=2*focal_length/(bbox_size*s*default_scale_factor+1e-8)",
+    "placement": "X_camera=X_local+pred_cam_t",
+    "unit": "meter",
+    "focal_length": "per-frame K[0,0]",
+    "image_coordinates": "original-image space",
+    "predicts_camera_rotation": false,
+    "predicts_global_orientation": false,
+    "predicts_world_trajectory": false
+  },
+  "camera_training": {
+    "data_leakage_verdict": "NO_TEST_LEAKAGE",
+    "dataset": "3DPW",
+    "train_sequences": 24,
+    "validation_sequences": 12,
+    "train_tracks": 34,
+    "validation_tracks": 16,
+    "train_windows": 1370,
+    "validation_windows": 614,
+    "window": 16,
+    "batch_windows_per_step": 1,
+    "conditions": [0.0, 0.15, 0.35, 0.55],
+    "optimizer": "AdamW",
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "max_epochs": 12,
+    "patience": 3,
+    "framewise_best_epoch": 11,
+    "temporal_best_epoch": 6,
+    "framewise_losses": [
+      {"name": "cam3d", "weight": 1.0, "type": "target-reliability-weighted SmoothL1 on pred_cam_t"},
+      {"name": "reproj", "weight": 22.407989736107268, "type": "confidence-masked bbox-normalized 2D error"}
+    ],
+    "temporal_losses": [
+      {"name": "velocity", "weight": 1.0},
+      {"name": "acceleration", "weight": 0.16511516225894365},
+      {"name": "absolute", "weight": 0.9057701220278093},
+      {"name": "reproj", "weight": 0.11466139446581076}
+    ],
+    "not_training_losses": ["jitter", "ATE", "RTE", "motion magnitude preservation", "reliability head", "latent"]
+  },
+  "schedule": ["Body restoration", "Frame-wise Camera", "Temporal Camera conditioned on frozen Frame-wise Camera"],
+  "joint_end_to_end_training": false,
+  "parameters": {
+    "foundation_total": 1285412468,
+    "foundation_trainable_in_dualrest": 0,
+    "head_pose_frozen": 173530148,
+    "head_camera_frozen": 1052675,
+    "body_added": 2345472,
+    "camera_framewise_added": 265344,
+    "camera_temporal_added": 733633,
+    "total_added": 3344449,
+    "added_over_foundation_percent": 0.2601848887621028
+  },
+  "cost": {"flops_measured": false, "latency_measured": false},
+  "remaining_caveats": ["FLOPs and latency not measured", "formal temporal Camera helper bypasses the checkpoint's stored reliability head/gate"],
+  "do_not_claim": [
+    "camera rotation prediction", "global orientation prediction", "independent world trajectory prediction",
+    "joint end-to-end Body-Camera training", "learned Body-Camera fusion", "explicit occlusion detector",
+    "real occlusion ratio required at test time", "alpha zero is exact identity", "Temporal-only is a valid ablation",
+    "Meta MHR-to-SMPL converter is a network component", "Dynamics-Low losses are main-model losses",
+    "formal Camera output is reliability-gated", "mask/keypoint-confidence/GT/reprojection cues are formal inference inputs",
+    "Camera evaluation metrics are training losses", "measured FLOPs or latency"
+  ],
+  "precision_supplement_20261011": {
+    "articulation_260d": {
+      "layout": [
+        {"slice": [0, 138], "meaning": "23 three-DoF rotations", "encoding": "6D each"},
+        {"slice": [138, 254], "meaning": "58 one-DoF rotations", "encoding": "sin/cos pair each"},
+        {"slice": [254, 260], "meaning": "six translations", "mhr_parameter_indices": [124, 125, 126, 127, 128, 129]}
+      ],
+      "geodesic_rotations": {"three_dof": 12, "one_dof_embedded_so3": 34, "total": 46},
+      "excluded": {"hand_parameter_indices": "62..115", "jaw_parameter_indices": [130, 131, 132], "translations": [124, 125, 126, 127, 128, 129]},
+      "loss": "mean acos(clamp((trace(R_pred R_teacher^T)-1)/2,-1+1e-6,1-1e-6))"
+    },
+    "body_synthetic_corruption": {
+      "conditions": ["clean", 0.15, 0.35, 0.55],
+      "operation": "one deterministic zero-filled rectangle entirely inside GT-2D-joint bbox",
+      "aspect_ratio": "log-uniform [0.6,1.6]",
+      "seed": "20260829 + level*100000 + frame_id",
+      "condition_sampling": "shuffled blocks of [0,1,2,3]; each four optimizer steps contain all conditions once; one condition shared by all items in a batch",
+      "prediction_target_pairing": {
+        "input_token": "pose_token[condition]",
+        "decode_init": "mhr_init_pose[condition]",
+        "condition_scalar": "one of 0,.15,.35,.55 expanded over 16 frames",
+        "feature_target": "pose_token[clean]",
+        "rotation_target": "body_cont[clean]",
+        "anchor": "Adapter(pose_token[clean],0) -> pose_token[clean]"
+      }
+    },
+    "temporal_camera_condition_12d": {
+      "values": ["visibility=1-ratio", "bbox_dx=(cx_t-cx_t-1)/size_t", "bbox_dy=(cy_t-cy_t-1)/size_t", "bbox_dlog_scale=log(size_t/size_t-1)", "mask_darea=0 because absent", "normalized clipped latent disagreement"],
+      "value_indices": [0, 1, 2, 3, 4, 5],
+      "presence_mask_indices": [6, 7, 8, 9, 10, 11],
+      "formal_presence_mask": [1, 1, 1, 1, 0, 1]
+    },
+    "camera_conversion": {
+      "sign_conversion": {"s": "-s_raw", "tx": "tx_raw", "ty": "-ty_raw"},
+      "q": "bbox_size*s*default_scale_factor+1e-8",
+      "translation": {"Tx": "tx+2*(bbox_center_x-W/2)/q", "Ty": "ty+2*(bbox_center_y-H/2)/q", "Tz": "2*K[0,0]/q"},
+      "formal_use_intrin_center": false,
+      "bbox_center": "midpoint of clipped GT-2D-joint bbox expanded 1.2 in width/height",
+      "bbox_size": "1.25*(x2-x1)",
+      "image_coordinates": "original-image pixels",
+      "placement": "X_camera=X_local+pred_cam_t"
+    },
+    "training_hyperparameters": {
+      "body": {"optimizer": "AdamW", "lr": 0.001, "weight_decay": 0.0001, "batch_windows": 16, "max_epochs": 12, "actual_epochs": 10, "best_epoch": 7, "scheduler": null, "early_stop_patience": 3, "gradient_clip": null, "window": 16, "train_stride": 1},
+      "camera_framewise": {"optimizer": "AdamW", "lr": 0.001, "weight_decay": 0.0001, "batch_windows": 1, "max_epochs": 12, "actual_epochs": 12, "best_epoch": 11, "best_step": 15070, "scheduler": null, "early_stop_patience": 3, "gradient_clip_global_norm": 1.0, "window": 16},
+      "camera_temporal": {"optimizer": "AdamW", "lr": 0.001, "weight_decay": 0.0001, "batch_windows": 1, "max_epochs": 12, "actual_epochs": 9, "best_epoch": 6, "best_step": 8220, "scheduler": null, "early_stop_patience": 3, "gradient_clip_global_norm": 1.0, "window": 16, "framewise_frozen": true}
+    }
+  }
+}

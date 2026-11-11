@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "utils3d"
+version = "1.7"
+description = "A pure-Python collection of useful functions for 3D computer vision and graphics research"
+readme = "README.md"
+authors = [
+    {name = "EasternJournalist", email = "wangrc2081cs@mail.ustc.edu.cn"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "moderngl",
+    "numpy",
+    "scipy",
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/EasternJournalist/utils3d"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["utils3d*"]
+

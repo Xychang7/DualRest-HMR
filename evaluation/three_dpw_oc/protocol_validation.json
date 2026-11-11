@@ -1,0 +1,63 @@
+{
+  "manifest": {
+    "candidate_centers": 20243,
+    "invalid_reasons": {
+      "boundary": 23,
+      "missing_oc_gt_neighbor": 159
+    },
+    "oc_sequences": 22,
+    "spatial_instances": 20243,
+    "valid_triplets": 20061
+  },
+  "real_triplet": [
+    {
+      "rgb_frame_idx": 0,
+      "sequence": "courtyard_backpack_00",
+      "source_actor_id": 0
+    },
+    {
+      "rgb_frame_idx": 1,
+      "sequence": "courtyard_backpack_00",
+      "source_actor_id": 0
+    },
+    {
+      "rgb_frame_idx": 2,
+      "sequence": "courtyard_backpack_00",
+      "source_actor_id": 0
+    }
+  ],
+  "resource": {
+    "dtype": "float64",
+    "file": "/root/data1/sam-body4d-master/dataset/3DPW/eval_assets/J_regressor_h36m_correct.npy",
+    "max_row_sum_error": 0.0003666143061710203,
+    "sha256": "1835d64133d5f66bd80a814ab1c1dc0900ef01950f568320acf5f9390c1f2c8c",
+    "shape": [
+      17,
+      6890
+    ]
+  },
+  "test_a_gt_as_prediction": {
+    "acceleration": {
+      "invalid_reasons": {
+        "boundary": 1,
+        "missing_adjacent_frame": 1
+      },
+      "mean_m_s2": 0.0,
+      "valid_triplets": 1
+    },
+    "mpjpe_mm": 0.0,
+    "mpvpe_mm": 0.0,
+    "pa_mpjpe_mm": 3.7039908336097e-13
+  },
+  "test_b_constant_translation": {
+    "mpjpe_mm": 0.03771444993523245,
+    "mpvpe_mm": 1.0215925779717674e-06,
+    "pa_mpjpe_mm": 0.030463939145366995
+  },
+  "test_c_scale_1p2": {
+    "mpjpe_mm": 89.92115304539574,
+    "mpvpe_mm": 89.74718819312392,
+    "pa_mpjpe_mm": 0.025167099999879594
+  },
+  "test_d_shuffled_order_rejected": true
+}

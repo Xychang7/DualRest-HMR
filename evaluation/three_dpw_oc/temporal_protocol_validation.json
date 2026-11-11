@@ -1,0 +1,18 @@
+{
+  "final_valid_acceleration_triplets": 20003,
+  "irregular_timestamp": 59,
+  "missing_source_actor_frame": 135,
+  "non_contiguous_rgb": 0,
+  "protocol": "sequenceFiles root-relative H36M J14 at continuous 30fps; OC centers only",
+  "rgb_sequence_boundary": 46,
+  "root_relative_j14_difference_mm": {
+    "count": 20243,
+    "max": 0.004526939848275184,
+    "mean": 0.002253204244273796,
+    "median": 0.0023672410775116164,
+    "p95": 0.004391919297465344
+  },
+  "state": "passed",
+  "theoretical_valid_before_timestamp": 20062,
+  "total_oc_center_instances": 20243
+}

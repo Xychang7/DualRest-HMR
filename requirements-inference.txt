@@ -1,0 +1,28 @@
+# Exact non-PyTorch package versions observed in the validated inference
+# environment. Install a CUDA-compatible torch/torchvision pair first; see
+# README.md. mamba-ssm and causal-conv1d must match that PyTorch/CUDA build.
+
+accelerate==1.14.0
+causal-conv1d==1.7.0
+einops==0.8.1
+fvcore==0.1.5.post20221221
+huggingface-hub==0.36.2
+imageio==2.37.4
+iopath==0.1.10
+mamba-ssm==2.3.2.post1
+matplotlib==3.11.1
+numpy==2.5.1
+omegaconf==2.3.0
+opencv-python==4.11.0.86
+pillow==12.3.0
+pytorch-lightning==2.6.5
+PyYAML==6.0.3
+roma==1.6.1
+safetensors==0.8.0
+scipy==1.18.0
+smplx==0.1.28
+timm==1.0.15
+tqdm==4.70.0
+transformers==4.57.6
+yacs==0.1.8
+

@@ -1,0 +1,248 @@
+{
+  "schema": "dynamesh-camera-root-correspondence-v1",
+  "verdict": "ROOT_MAPPING_RELIABLE",
+  "common_geometry_mapping": "COMMON_GEOMETRY_MAPPING_AVAILABLE",
+  "definition": {
+    "mhr_local_origin": "MHR rig/model coordinate [0,0,0] with head_pose global_trans forced to zero; not an anatomical pelvis token",
+    "pred_cam_t": "translation added uniformly to all local MHR points after SAM camera-axis conversion",
+    "prediction_pelvis": "row-normalized J_regressor_h36m[0] applied to official barycentric MHR-to-SMPL-6890 surface mapping",
+    "gt_pelvis": "the same row-normalized J_regressor_h36m[0] applied to reconstructed 3DPW SMPL-6890 vertices",
+    "fixed_offset_used": false,
+    "fitting_or_metric_selection_used": false
+  },
+  "source_assets": {
+    "surface_mapping": "/root/data1/MHR-main/tools/mhr_smpl_conversion/assets/mhr2smpl_mapping.npz",
+    "surface_mapping_sha256": "4bfe2fd6abb598f38ba3a3aa5506ac45b4efb3cdaed7fe4757cfbbf20bbe6ac7",
+    "h36m_regressor": "/root/DuoMo-main/data/body_models/J_regressor_h36m.npy",
+    "h36m_regressor_sha256": "c655cd7013d7829eb9acbebf0e43f952a3fa0305a53c35880e39192bfb6444a0",
+    "framewise_checkpoint_sha256": "fd318ddbe3e3a1e9a13134e649ce92aa60c9b28385bf809ffb3ffc44ef516cb2",
+    "temporal_checkpoint_sha256": "e7562abc45825de76ddb7a24b60bdf3675061c9ba63ac150071558b98f6ac865"
+  },
+  "sample_scope": {
+    "windows": 4,
+    "frames_x_conditions": 256,
+    "splits": [
+      "train",
+      "validation"
+    ],
+    "records": [
+      {
+        "sequence": "courtyard_arguing_00",
+        "person_id": 0,
+        "split": "train",
+        "gender_model": "female",
+        "frame_ids": [
+          737,
+          739,
+          741,
+          743,
+          745,
+          747,
+          749,
+          751,
+          753,
+          755,
+          757,
+          759,
+          761,
+          763,
+          765,
+          767
+        ],
+        "local_indices": [
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383
+        ]
+      },
+      {
+        "sequence": "courtyard_arguing_00",
+        "person_id": 1,
+        "split": "train",
+        "gender_model": "male",
+        "frame_ids": [
+          737,
+          739,
+          741,
+          743,
+          745,
+          747,
+          749,
+          751,
+          753,
+          755,
+          757,
+          759,
+          761,
+          763,
+          765,
+          767
+        ],
+        "local_indices": [
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383
+        ]
+      },
+      {
+        "sequence": "courtyard_relaxOnBench_00",
+        "person_id": 0,
+        "split": "train",
+        "gender_model": "male",
+        "frame_ids": [
+          480,
+          482,
+          484,
+          486,
+          488,
+          490,
+          492,
+          494,
+          496,
+          498,
+          500,
+          502,
+          504,
+          506,
+          508,
+          510
+        ],
+        "local_indices": [
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255
+        ]
+      },
+      {
+        "sequence": "courtyard_jumpBench_01",
+        "person_id": 0,
+        "split": "validation",
+        "gender_model": "male",
+        "frame_ids": [
+          608,
+          610,
+          612,
+          614,
+          616,
+          618,
+          620,
+          622,
+          624,
+          626,
+          628,
+          630,
+          632,
+          634,
+          636,
+          638
+        ],
+        "local_indices": [
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319
+        ]
+      }
+    ]
+  },
+  "gate_checks": {
+    "official_mapping_topology": true,
+    "barycentric_rows_sum_to_one_max_abs": 2.220446049250313e-16,
+    "h36m_pelvis_regressor_raw_sum": 0.999912769059748,
+    "h36m_regressor_raw_max_row_sum_deviation": 0.0003666143061710203,
+    "h36m_pelvis_regressor_normalized_sum": 1.0,
+    "h36m_regressor_normalization_max_abs_weight_change": 0.00019522305293595554,
+    "translation_equivariance_max_abs_m": 4.440892098500626e-16,
+    "gt_world_camera_world_roundtrip_max_abs_m": 2.220446049250313e-15,
+    "prediction_camera_world_camera_roundtrip_max_abs_m": 8.881784197001252e-15,
+    "test_split_used": false
+  },
+  "offset_diagnostics": {
+    "origin_to_common_pelvis_m": {
+      "n": 256,
+      "mean": 0.969201633924389,
+      "median": 0.9835043670174942,
+      "std": 0.02818030762487086,
+      "p95": 0.992247515060619,
+      "max": 0.992737221654792
+    },
+    "hip_midpoint_to_common_pelvis_m": {
+      "n": 256,
+      "mean": 0.07774586140565351,
+      "median": 0.07691230383175329,
+      "std": 0.0030143885375850843,
+      "p95": 0.08484245333074764,
+      "max": 0.08702535113986536
+    },
+    "gt_transl_to_native_smpl_pelvis_m": {
+      "n": 256,
+      "mean": 0.2327765434522188,
+      "median": 0.24266450532895392,
+      "std": 0.017126466694831085,
+      "p95": 0.24266452713736586,
+      "max": 0.24266453465169183
+    },
+    "native_smpl_to_h36m_pelvis_m": {
+      "n": 256,
+      "mean": 0.03618836284600499,
+      "median": 0.03638722512557793,
+      "std": 0.008043209209224387,
+      "p95": 0.04544330836075303,
+      "max": 0.045770190326782395
+    },
+    "hip_common_offset_vs_pose_magnitude_correlation": -0.45587431438746684,
+    "interpretation": "offset is pose/shape/orientation dependent and is not used; pelvis is recomputed from geometry per frame"
+  },
+  "elapsed_seconds": 23.411784887313843
+}
